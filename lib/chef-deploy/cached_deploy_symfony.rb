@@ -1,5 +1,3 @@
-require 'cached_deploy'
-
 class ChefDeploySymfonyFailure < ChefDeployFailure
 end
 

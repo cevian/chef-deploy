@@ -1,6 +1,7 @@
 require File.join(File.dirname(__FILE__), 'chef-deploy/subversion')
 require File.join(File.dirname(__FILE__), 'chef-deploy/git')
 require File.join(File.dirname(__FILE__), 'chef-deploy/cached_deploy')
+require File.join(File.dirname(__FILE__), 'chef-deploy/cached_deploy_symfony')
 
 # deploy "/data/#{app}" do
 #   repo "git://github.com/engineyard/rack-app.git"
@@ -82,6 +83,14 @@ class Chef
         )
       end
       
+      def git_user(arg=nil)
+        set_or_return(
+          :git_user,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
       def group(arg=nil)
         set_or_return(
           :group,
@@ -214,7 +223,8 @@ class Chef
                                 :scm                   => @new_resource.scm || 'git',
                                 :node                  => @node,
                                 :new_resource          => @new_resource,
-                                :git_ssh_wrapper       => @git_ssh_wrapper
+                                :git_ssh_wrapper       => @git_ssh_wrapper,
+                                :git_user              => @new_resource.git_user || @new_resource.user
       end
       
       def action_deploy

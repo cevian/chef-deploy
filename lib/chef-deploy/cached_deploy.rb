@@ -11,7 +11,12 @@ class CachedDeploy
     if @configuration[:revision] == ''
        @configuration[:revision] = source.query_revision(@configuration[:branch]) {|cmd| run_with_result "#{cmd}"}
     end
-    
+   
+    if check_current_revision_and_noop_if_same @configuration[:revision]
+      Chef::Log.info "skipping deploy, no updates"
+      return false
+    end
+
     Chef::Log.info "ensuring proper ownership"
     chef_run("chown -R #{user}:#{group} #{@configuration[:deploy_to]}")    
     

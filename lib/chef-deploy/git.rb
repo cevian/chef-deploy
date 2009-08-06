@@ -14,7 +14,7 @@ class Git
   
   def git
     res = configuration[:git_ssh_wrapper] ? "GIT_SSH=#{configuration[:git_ssh_wrapper]} git" : 'git'
-    res = "sudo -u #{configuration[:user]} #{res}" if configuration[:user]
+    res = "sudo -u #{configuration[:git_user]} #{res}" if configuration[:git_user]
     res
   end
   
