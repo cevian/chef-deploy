@@ -30,6 +30,7 @@ class Chef
         @action = :deploy
         @allowed_actions.push(:deploy)
         @allowed_actions.push(:rollback)
+        @strategy = CachedDeploy
       end
       
       def repo(arg=nil)
@@ -177,16 +178,23 @@ class Chef
         )
       end
  
+      def strategy(arg=nil)
+        set_or_return(
+          :strategy,
+          arg,
+          :kind_of => [ Class ]
+        )
+      end
+
     end
   end
   
   class Provider
     class Deploy < Chef::Provider 
-      
       def load_current_resource
         FileUtils.mkdir_p "#{@new_resource.name}/shared"
         FileUtils.mkdir_p "#{@new_resource.name}/releases"
-        @dep = CachedDeploy.new :user                  => @new_resource.user,
+        @dep = @new_resource.strategy.new :user                  => @new_resource.user,
                                 :group                 => @new_resource.group,
                                 :role                  => @new_resource.role,
                                 :branch                => (@new_resource.branch || 'HEAD'),
