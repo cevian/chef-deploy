@@ -2,36 +2,7 @@ class ChefDeploySymfonyFailure < ChefDeployFailure
 end
 
 class CachedDeploySymfony < CachedDeploy
-  # Executes the SCM command for this strategy and writes the REVISION
-  # mark file to each host.
-  def deploy
-    @configuration[:release_path] = "#{@configuration[:deploy_to]}/releases/#{Time.now.utc.strftime("%Y%m%d%H%M%S")}"
-    if @configuration[:revision] == ''
-       @configuration[:revision] = source.query_revision(@configuration[:branch]) {|cmd| run_with_result "#{cmd}"}
-    end
-    
-    Chef::Log.info "ensuring proper ownership"
-    chef_run("chown -R #{user}:#{group} #{@configuration[:deploy_to]}")    
-    
-    Chef::Log.info "deploying branch: #{@configuration[:branch]} rev: #{@configuration[:revision]}"
-    Chef::Log.info "updating the cached checkout"
-    chef_run(update_repository_cache)
-    Chef::Log.info "copying the cached version to #{release_path}"
-    chef_run(copy_repository_cache)
-    install_gems
-    
-    chef_run("chown -R #{user}:#{group} #{@configuration[:deploy_to]}")    
-    
-    callback(:before_migrate)
-    migrate
-    callback(:before_symlink)
-    symlink
-    callback(:before_restart)
-    restart
-    callback(:after_restart)
-    cleanup
-  end
-  
+
   def symlink(release_to_link=latest_release)
     Chef::Log.info "symlinking and finishing deploy"
     symlink = false
