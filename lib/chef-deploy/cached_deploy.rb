@@ -29,10 +29,11 @@ class CachedDeploy
     
     chef_run("chown -R #{user}:#{group} #{@configuration[:deploy_to]}")    
     
-    callback(:before_migrate)
-    migrate
+
     callback(:before_symlink)
     symlink
+    callback(:before_migrate)
+    migrate
     callback(:before_restart)
     restart
     callback(:after_restart)
